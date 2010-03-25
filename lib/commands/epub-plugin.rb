@@ -28,7 +28,8 @@ require 'rubygems'
 require 'tgz_extractor'
 
 gem "rails"
-eval File.read(File.join(Gem.datadir("rails"), "../../lib/commands/plugin.rb")).sub(/Commands::Plugin.parse!/, "")
+rails_plugin = File.expand_path(File.join(Gem.datadir("rails"), "../../lib/commands/plugin.rb"))
+eval File.read(rails_plugin).sub(/Commands::Plugin.parse!/, "")
 
 OLD_FIND_METHOD = Plugin.method(:find)
 OLD_GUESS_NAME_METHOD = Plugin.instance_method(:guess_name)
