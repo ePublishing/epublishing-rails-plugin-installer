@@ -31,6 +31,16 @@ gem "rails"
 rails_plugin = File.expand_path(File.join(Gem.datadir("rails"), "../../lib/commands/plugin.rb"))
 eval File.read(rails_plugin).sub(/Commands::Plugin.parse!/, "")
 
+OLD_EXTERNALS_SET_METHOD = RailsEnvironment.instance_method(:externals=)
+RailsEnvironment.class_eval do
+
+  # Fix a bug in rails that assumes plugin is svn-based
+  def externals=(items)
+    OLD_EXTERNALS_SET_METHOD.bind(self).call(items) unless items.empty?
+  end
+
+end
+
 OLD_FIND_METHOD = Plugin.method(:find)
 OLD_GUESS_NAME_METHOD = Plugin.instance_method(:guess_name)
 OLD_INSTALL_METHOD = Plugin.instance_method(:install)
