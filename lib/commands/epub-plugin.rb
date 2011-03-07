@@ -75,7 +75,10 @@ Plugin.class_eval do
     else
       @uri = File.expand_path(@uri)
     end
-    TgzExtractor.extract(@uri, install_path, true)
+    Dir.chdir(install_path) do
+      system(%Q[tar xvzf "#{@uri}"]) or
+      TgzExtractor.extract(@uri, install_path, true)
+    end
   ensure
     rm temp_file unless temp_file.nil?
   end
