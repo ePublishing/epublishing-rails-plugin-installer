@@ -4,7 +4,7 @@ require 'rake/gempackagetask'
 
 spec = Gem::Specification.new do |s|
   s.name = %q{epublishing-installer}
-  s.version = "6.0.1"
+  s.version = "6.0.2"
   s.author = "David McCullars"
   s.executables = ["epub-plugin"]
   s.files = FileList["{bin,lib}/**/*"].to_a
