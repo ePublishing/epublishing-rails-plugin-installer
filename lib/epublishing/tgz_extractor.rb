@@ -24,25 +24,27 @@ require 'fileutils'
 require 'rubygems'
 require 'rubygems/package'
 
-class TgzExtractor < Gem::Package::TarInput
+module Epublishing
+  class TgzExtractor < Gem::Package::TarInput
 
-  def self.extract(src, destdir, verbose=false)
-    tarinput = new
-    Zlib::GzipReader.open(src) do |gz|
-      io = StringIO.new gz.read
-      Gem::Package::TarReader.new(io) do |tar|
-        tar.each do |entry|
-          puts "+ #{entry.full_name}" if verbose
-          tarinput.extract_entry(destdir, entry)
+    def self.extract(src, destdir, verbose=false)
+      tarinput = new
+      Zlib::GzipReader.open(src) do |gz|
+        io = StringIO.new gz.read
+        Gem::Package::TarReader.new(io) do |tar|
+          tar.each do |entry|
+            puts "+ #{entry.full_name}" if verbose
+            tarinput.extract_entry(destdir, entry)
+          end
         end
       end
     end
+
+    private
+
+    def initialize
+      @fileops = Gem::FileOperations.new
+    end
+
   end
-
-  private
-
-  def initialize
-    @fileops = Gem::FileOperations.new
-  end
-
 end

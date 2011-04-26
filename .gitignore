@@ -1,1 +1,4 @@
-*.swp
+/coverage
+/pkg
+/doc
+*.sw*

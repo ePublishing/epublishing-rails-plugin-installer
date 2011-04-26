@@ -24,28 +24,30 @@ require 'fileutils'
 require 'rubygems'
 require 'rubygems/package'
 
-class TgzBuilder
+module Epublishing
+  class TgzBuilder
 
-  def self.build(dest, srcdir, verbose=false)
-    parent_idx = File.dirname(srcdir).size + 1
-    tar_io = StringIO.new
-    Gem::Package::TarWriter.new(tar_io) do |tar|
-      Dir[File.join srcdir, '**', '**'].each do |file|
-        name = file[parent_idx, file.size].sub(/^\.+\//, '')
-        mode = File.stat(file).mode
-        if File.directory?(file)
-          tar.mkdir(name, mode)
-        else
-          tar.add_file(name, mode) do |out_io|
-            File.open(file, 'rb') { |in_io| out_io.write in_io.read }
+    def self.build(dest, srcdir, verbose=false)
+      parent_idx = File.dirname(srcdir).size + 1
+      tar_io = StringIO.new
+      Gem::Package::TarWriter.new(tar_io) do |tar|
+        Dir[File.join srcdir, '**', '**'].each do |file|
+          name = file[parent_idx, file.size].sub(/^\.+\//, '')
+          mode = File.stat(file).mode
+          if File.directory?(file)
+            tar.mkdir(name, mode)
+          else
+            tar.add_file(name, mode) do |out_io|
+              File.open(file, 'rb') { |in_io| out_io.write in_io.read }
+            end
           end
+          puts "+ #{name}" if verbose
         end
-        puts "+ #{name}" if verbose
+      end
+      Zlib::GzipWriter.open(dest) do |gz|
+        gz.write tar_io.string
       end
     end
-    Zlib::GzipWriter.open(dest) do |gz|
-      gz.write tar_io.string
-    end
-  end
 
+  end
 end

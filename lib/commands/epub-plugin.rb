@@ -25,41 +25,48 @@
 
 require 'tmpdir'
 require 'rubygems'
-require 'tgz_extractor'
+require 'epublishing/tgz_extractor'
 
 gem "rails"
-rails_plugin = File.expand_path(File.join(Gem.datadir("rails"), "../../lib/commands/plugin.rb"))
-eval File.read(rails_plugin).sub(/Commands::Plugin.parse!/, "")
 
-OLD_EXTERNALS_SET_METHOD = RailsEnvironment.instance_method(:externals=)
+rails_plugin = File.expand_path "../../lib/commands/plugin.rb", Gem.datadir("rails")
+eval File.read(rails_plugin).sub(/^Commands::Plugin.parse!/, "")
+
 RailsEnvironment.class_eval do
 
   # Fix a bug in rails that assumes plugin is svn-based
-  def externals=(items)
-    OLD_EXTERNALS_SET_METHOD.bind(self).call(items) unless items.empty?
+  alias :externals_without_non_svn= :externals=
+  def externals_with_non_svn=(items)
+    send(:externals_without_non_svn=, items) unless items.nil? or items.empty?
   end
+  alias :externals= :externals_with_non_svn=
 
 end
 
-OLD_FIND_METHOD = Plugin.method(:find)
-OLD_GUESS_NAME_METHOD = Plugin.instance_method(:guess_name)
-OLD_INSTALL_METHOD = Plugin.instance_method(:install)
 Plugin.class_eval do
 
-  def self.find(name)
-    File.exists?(name) ? new(name) : OLD_FIND_METHOD.call(name)
+  class << self
+    alias :find_without_file_existence_check :find
+    def find_with_file_existence_check(name)
+      File.exists?(name) ? new(name) : find_without_file_existence_check(name)
+    end
+    alias :find :find_with_file_existence_check
   end
 
-  def guess_name(url)
-    OLD_GUESS_NAME_METHOD.bind(self).call(url)
-    @name.gsub!(/\.t(ar\.)?gz$/, '') if @name =~ /\.t(ar\.)?gz$/
+  alias :guess_name_without_tgz_support :guess_name
+  def guess_name_with_tgz_support(url)
+    guess_name_without_tgz_support(url)
+    @name.gsub!(/\.t(ar\.)?gz$/, '')
   end
+  alias :guess_name :guess_name_with_tgz_support
 
-  def install(method=nil, options = {})
+  alias :install_without_tgz_and_file_support :install
+  def install_with_tgz_and_file_support(method=nil, options = {})
     method = :tgz if @uri =~ /\.t(ar\.)?gz$/
     method = :file if File.exists?(@uri) and File.directory?(@uri)
-    OLD_INSTALL_METHOD.bind(self).call(method, options)
+    install_without_tgz_and_file_support(method, options)
   end
+  alias :install :install_with_tgz_and_file_support
 
   def install_using_tgz(options = {})
     temp_file = nil
@@ -77,7 +84,7 @@ Plugin.class_eval do
     end
     Dir.chdir(install_path) do
       system(%Q[tar xvzf "#{@uri}"]) or
-      TgzExtractor.extract(@uri, install_path, true)
+      Epublishing::TgzExtractor.extract(@uri, install_path, true)
     end
   ensure
     rm temp_file unless temp_file.nil?
