@@ -1,0 +1,9 @@
+CHANGELOG
+LICENSE
+README.rdoc
+Rakefile
+bin/epub-plugin
+lib/commands/epub-plugin.rb
+lib/epublishing/tgz_builder.rb
+lib/epublishing/tgz_extractor.rb
+Manifest
