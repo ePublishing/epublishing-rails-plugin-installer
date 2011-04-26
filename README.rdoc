@@ -1,0 +1,36 @@
+= EpublishingRailsPluginInstaller - An extension of standard rails plugin script
+to provide support for local file system and tgz files
+
+== Introduction
+
+The standard rails 'plugin' script lacks support for installing
+from the local file system as well as installing tar.gz files.
+(The latter scenario greatly speeds up installation from http
+as the alternative is downloading each file, one-by-one.)
+
+This class piggy-backs on the standard rails 'plugin' command and
+can be used as a complete replacement if so desired.
+
+=== Installation
+
+  gem install epublishing-rails-plugin-installer
+
+=== Git Repository
+
+http://github.com/ePublishing/epublishing-rails-plugin-installer
+
+== Prerequisites
+
+The EpublishingRailsPluginInstaller gem depends on rubygems and
+rails.
+
+== Usage
+
+  epub-plugin install /some/location/on/the/disk
+  epub-plugin install http://somewhere.com/foo/a_plugin.tgz
+  epub-plugin install http://somewhere.com/foo/another_plugin.tar.gz
+
+---
+Author::   David McCullars <mailto:dmccullars@ePublishing.com>
+Copyright:: (C) 2011 ePublishing
+Licence::  GPL[http://www.gnu.org/copyleft/gpl.html]
