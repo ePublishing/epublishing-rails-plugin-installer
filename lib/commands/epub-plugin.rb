@@ -102,4 +102,20 @@ Plugin.class_eval do
 
 end
 
+# Fix Bug in windows with 1.9.2
+require 'active_support'
+require 'os'
+module Kernel
+
+  def silence_stream(stream)
+    old_stream = stream.dup
+    stream.reopen(OS.dev_null)
+    stream.sync = true
+    yield
+  ensure
+    stream.reopen(old_stream)
+  end
+
+end
+
 Commands::Plugin.parse!

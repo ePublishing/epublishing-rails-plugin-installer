@@ -13,6 +13,7 @@ Echoe.new("epublishing-rails-plugin-installer") do |s|
   s.rdoc_pattern = /README|TODO|LICENSE|CHANGELOG|BENCH|COMPAT|exceptions|behaviors|epub-plugin.rb/
   s.clean_pattern += ["ext/lib", "ext/include", "ext/share", "ext/libepublishing-rails-plugin-installer-?.??", "ext/bin", "ext/conftest.dSYM"]
   s.summary = 'An extension of standard rails plugin script to provide support for local file system and tgz files'
+  s.runtime_dependencies = ["os >=0.7.4"]
 end
 
 desc 'generate API documentation to doc/rdocs/index.html'

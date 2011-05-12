@@ -1,9 +1,10 @@
 CHANGELOG
 LICENSE
+Manifest
 README.rdoc
 Rakefile
 bin/epub-plugin
+epublishing-rails-plugin-installer.gemspec
 lib/commands/epub-plugin.rb
 lib/epublishing/tgz_builder.rb
 lib/epublishing/tgz_extractor.rb
-Manifest
